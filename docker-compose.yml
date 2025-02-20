@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
+        volumes:
+            - .:/var/www
+            - ./docker/scripts:/var/www/docker/scripts
+        working_dir: /var/www
+        depends_on:
+            - database
+
+    webserver:
+        image: nginx:alpine
+        ports:
+            - "8080:80"
+        volumes:
+            - .:/var/www
+            - ./docker/nginx/conf.d:/etc/nginx/conf.d
+        depends_on:
+            - app
+
+    database:
+        image: postgres:17-alpine
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_DB: laravel
+            POSTGRES_USER: laravel
+            POSTGRES_PASSWORD: secret
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+
+    node:
+        build:
+            context: .
+            dockerfile: docker/node/Dockerfile
+        volumes:
+            - .:/var/www
+        working_dir: /var/www
+
+volumes:
+    pgdata:
