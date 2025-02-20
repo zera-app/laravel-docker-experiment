@@ -24,8 +24,17 @@ WORKDIR /var/www
 RUN groupadd -g 1000 www
 RUN useradd -u 1000 -ms /bin/bash -g www www
 
+# Create scripts directory with proper permissions
+RUN mkdir -p /var/www/docker/scripts && \
+    chown -R www:www /var/www/docker/scripts && \
+    chmod -R 755 /var/www/docker/scripts
+
 # Copy existing application directory permissions
 COPY --chown=www:www . /var/www
+
+# Make startup script executable
+COPY --chown=www:www docker/scripts/startup.sh /var/www/docker/scripts/
+RUN chmod +x /var/www/docker/scripts/startup.sh
 
 # Change current user to www
 USER www

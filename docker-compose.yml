@@ -11,6 +11,7 @@ services:
         working_dir: /var/www
         depends_on:
             - database
+        command: ["/var/www/docker/scripts/startup.sh"]
 
     webserver:
         image: nginx:alpine
